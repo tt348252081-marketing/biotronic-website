@@ -1,0 +1,91 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+
+interface Product {
+  id: string;
+  brand: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+interface ProductCardProps {
+  product: Product;
+}
+
+export function ProductCard({ product }: ProductCardProps) {
+  const [hoverColor, setHoverColor] = useState<"green" | "purple">("green");
+
+  const handleMouseEnter = () => {
+    const color = Math.random() > 0.5 ? "green" : "purple";
+    setHoverColor(color);
+  };
+
+  return (
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      onMouseEnter={handleMouseEnter}
+      className="h-full"
+    >
+      <Card
+        className={cn(
+          "group relative h-full overflow-hidden rounded-[20px] border border-black/5 bg-white p-0 transition-all duration-500",
+          "hover:shadow-lg",
+          hoverColor === "green"
+            ? "hover:shadow-[#4ca635]/20 hover:border-[#4ca635]/30"
+            : "hover:shadow-[#4a2573]/20 hover:border-[#4a2573]/30"
+        )}
+      >
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-asdan-blue to-asdan-orange opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+        {/* MOBILE FIRST — 直向排列 */}
+        <div className="flex flex-col sm:flex-row gap-6 p-6 h-full">
+
+          {/* Image wrapper – 固定正方形、圓角一致 */}
+          <div className="flex justify-center sm:block">
+            <div className="w-[120px] h-[120px] rounded-2xl bg-gradient-to-br from-gray-50 to-gray-200 border border-black/5 flex items-center justify-center overflow-hidden">
+              <img
+                src={product.icon}
+                alt={product.name}
+                className="w-full h-full object-cover rounded-2xl"
+              />
+            </div>
+          </div>
+
+          {/* Text Content */}
+          <div className="flex-1 flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-asdan-orange" />
+              <span className="text-sm font-bold uppercase tracking-[1.5px] text-asdan-blue group-hover:text-asdan-orange transition-colors">
+                {product.brand}
+              </span>
+            </div>
+
+            <h3 className="text-lg sm:text-xl font-semibold text-[#2c3e50] leading-tight">
+              {product.name}
+            </h3>
+
+            {/* Description box */}
+            <div
+              className={cn(
+                "mt-1 rounded-lg p-3 transition-all duration-300",
+                "group-hover:-translate-y-1 group-hover:text-white",
+                hoverColor === "green"
+                  ? "group-hover:bg-hover-green"
+                  : "group-hover:bg-hover-purple"
+              )}
+            >
+              <p className="text-sm leading-relaxed opacity-90 group-hover:opacity-100">
+                {product.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </motion.div>
+  );
+}
