@@ -16,30 +16,49 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [hoverColor, setHoverColor] = useState<"green" | "purple">("green");
+  const [activeColor, setActiveColor] = useState<"green" | "purple">("green");
+  const [isActive, setIsActive] = useState(false);
 
-  const handleMouseEnter = () => {
-    setHoverColor(Math.random() > 0.5 ? "green" : "purple");
+  const activate = () => {
+    setActiveColor(Math.random() > 0.5 ? "green" : "purple");
+    setIsActive(true);
+  };
+
+  const deactivate = () => {
+    setIsActive(false);
   };
 
   return (
     <motion.div
       whileHover={{ y: -8 }}
+      animate={{ y: isActive ? -8 : 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      onMouseEnter={handleMouseEnter}
+      onMouseEnter={activate}
+      onMouseLeave={deactivate}
+      onTouchStart={activate}
+      onTouchEnd={deactivate}
       className="h-full"
     >
       <Card
         className={cn(
-          "group relative h-full overflow-hidden rounded-[20px] border border-black/5 bg-white p-0 transition-all duration-500",
-          "hover:shadow-lg",
-          hoverColor === "green"
-            ? "hover:shadow-[#4ca635]/20 hover:border-[#4ca635]/30"
-            : "hover:shadow-[#4a2573]/20 hover:border-[#4a2573]/30"
+          "relative h-full overflow-hidden rounded-[20px] border border-black/5 bg-white p-0 transition-all duration-300",
+          isActive && "shadow-lg",
+          activeColor === "green"
+            ? isActive
+              ? "border-[#4ca635]/40 shadow-[#4ca635]/30"
+              : "hover:border-[#4ca635]/40 hover:shadow-[#4ca635]/30"
+            : isActive
+            ? "border-[#4a2573]/40 shadow-[#4a2573]/30"
+            : "hover:border-[#4a2573]/40 hover:shadow-[#4a2573]/30"
         )}
       >
         {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-asdan-blue to-asdan-orange opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div
+          className={cn(
+            "absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-asdan-blue to-asdan-orange transition-opacity duration-300",
+            isActive ? "opacity-100" : "opacity-0"
+          )}
+        />
 
         {/* Content */}
         <div className="flex flex-col sm:flex-row gap-6 p-6 h-full">
@@ -58,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex-1 flex flex-col gap-3">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-asdan-orange" />
-              <span className="text-sm font-bold uppercase tracking-[1.5px] text-asdan-blue group-hover:text-asdan-orange transition-colors">
+              <span className="text-sm font-bold uppercase tracking-[1.5px] text-asdan-blue">
                 {product.brand}
               </span>
             </div>
@@ -67,20 +86,26 @@ export function ProductCard({ product }: ProductCardProps) {
               {product.name}
             </h3>
 
-            {/* Description with background highlight */}
+            {/* Description */}
             <div className="relative mt-1 rounded-lg overflow-hidden">
               {/* 背景色塊 */}
               <div
                 className={cn(
-                  "absolute inset-0 opacity-0 transition-all duration-300 group-hover:opacity-100",
-                  hoverColor === "green"
+                  "absolute inset-0 transition-opacity duration-300",
+                  isActive ? "opacity-100" : "opacity-0",
+                  activeColor === "green"
                     ? "bg-[#4ca635]"
                     : "bg-[#4a2573]"
                 )}
               />
 
               {/* 文字 */}
-              <p className="relative z-10 p-3 text-sm leading-relaxed text-[#2c3e50] group-hover:text-white transition-colors duration-300">
+              <p
+                className={cn(
+                  "relative z-10 p-3 text-sm leading-relaxed transition-colors duration-300",
+                  isActive ? "text-white" : "text-[#2c3e50]"
+                )}
+              >
                 {product.description}
               </p>
             </div>
